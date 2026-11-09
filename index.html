@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Porto Together – Business &amp; Service Reviews</title>
+<meta name="description" content="Member recommendations for businesses and services in and around Porto, Portugal.">
+<style>
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --text:#1d2430; --muted:#5b6575; --line:#dfe3ea;
+  --accent:#0b5cad; --accent-text:#ffffff; --chip:#e8f0fa; --chip-text:#0b4a8a; --mark:#fff3b0;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#14181f; --card:#1d232d; --text:#e8ecf2; --muted:#9aa5b5; --line:#313a48;
+    --accent:#6db0ff; --accent-text:#0b1320; --chip:#26344a; --chip-text:#bcd9ff; --mark:#5a4d00; color-scheme: dark; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:920px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.6rem;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 16px}
+.top-actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+a.btn,button.btn{display:inline-block;border:1px solid var(--accent);background:var(--accent);color:var(--accent-text);
+  padding:8px 14px;border-radius:8px;text-decoration:none;font:inherit;font-weight:600;cursor:pointer}
+a.btn.alt,button.btn.alt{background:transparent;color:var(--accent)}
+a.btn.small,button.btn.small{padding:4px 10px;font-size:.88rem}
+.filters{display:grid;gap:10px;grid-template-columns:1fr 1fr 1fr;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+.filters .full{grid-column:1/-1}
+label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:3px}
+input[type=search],select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}
+.check{display:flex;align-items:center;gap:6px;font-size:.92rem;color:var(--text)}
+.check label{margin:0;font-size:.92rem;color:var(--text)}
+@media(max-width:640px){.filters{grid-template-columns:1fr}}
+.count{color:var(--muted);margin:8px 2px 12px;font-size:.92rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.card h2{font-size:1.15rem;margin:0 0 6px;overflow-wrap:anywhere}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.chip{background:var(--chip);color:var(--chip-text);border:0;border-radius:999px;padding:2px 10px;font-size:.82rem;cursor:pointer;font-family:inherit}
+.chip.plain{cursor:default;background:transparent;border:1px solid var(--line);color:var(--muted)}
+.meta{font-size:.92rem;color:var(--muted);margin:0 0 6px;overflow-wrap:anywhere}
+.meta a{color:var(--accent)}
+.meta span+span::before{content:" · ";color:var(--muted)}
+.reviews{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.review{margin:0 0 10px;white-space:pre-line;overflow-wrap:anywhere}
+.review.hit{background:var(--mark);border-radius:6px;padding:4px 6px}
+.byline{display:block;color:var(--muted);font-size:.85rem;margin-top:2px;white-space:normal}
+.noreviews{color:var(--muted);font-style:italic}
+.row-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
+.link-btn{background:none;border:0;padding:0;color:var(--accent);font:inherit;cursor:pointer;text-decoration:underline}
+.empty,.error{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;text-align:center}
+footer{color:var(--muted);font-size:.85rem;margin-top:28px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Porto Together – Business &amp; Service Reviews</h1>
+  <p class="sub">Recommendations shared by members of the Porto Together community. <span id="stats"></span></p>
+  <div class="top-actions">
+    <a class="btn" id="btn-new" href="#" target="_blank" rel="noopener">+ Recommend a business</a>
+  </div>
+
+  <div class="filters">
+    <div class="full">
+      <label for="q">Search by business name, keyword, or words in a review</label>
+      <input id="q" type="search" placeholder="e.g. dentist, plumber, English-speaking, Dr. Silva" autocomplete="off">
+    </div>
+    <div>
+      <label for="cat">Category</label>
+      <select id="cat"><option value="">All categories</option></select>
+    </div>
+    <div>
+      <label for="city">City / area</label>
+      <select id="city"><option value="">All areas</option></select>
+    </div>
+    <div>
+      <label for="sort">Sort by</label>
+      <select id="sort">
+        <option value="name">Name (A–Z)</option>
+        <option value="recent">Most recent review</option>
+        <option value="most">Most reviews</option>
+      </select>
+    </div>
+    <div class="full check">
+      <input type="checkbox" id="inrev" checked><label for="inrev">Also search inside review text</label>
+      <button class="link-btn" id="clear" type="button" style="margin-left:auto">Clear filters</button>
+    </div>
+  </div>
+
+  <div id="count" class="count" aria-live="polite"></div>
+  <div id="list"></div>
+  <div style="text-align:center"><button id="more" class="btn alt" hidden>Show more</button></div>
+
+  <footer>
+    Reviews are personal opinions shared by individual members and are not endorsements by Porto Together or its admins.
+    Please check details yourself before hiring anyone. If something is wrong or out of date, use
+    “Suggest a correction” on that business. Submissions are checked by an admin before they appear here.
+  </footer>
+</div>
+
+<script>
+// ===== Settings: the four published links from the public Google Sheet =====
+const SHEET = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT98WnI8piXiuTvir8GowkRzMFpEpLhKAXmFMdhSv8B6sgmQWdfxZudcYkckdPxnn6xxexxjc4ibAms/pub?single=true&output=csv&gid=';
+const URLS = {
+  businesses: SHEET + '1455181839',
+  reviews:    SHEET + '1647250003',
+  categories: SHEET + '1273329995',
+  config:     SHEET + '1275271188'
+};
+const PAGE = 25;
+
+// ===== Helpers =====
+function parseCSV(text){
+  const rows=[]; let row=[], f='', q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; }
+      else f+=c;
+    } else if(c==='"') q=true;
+    else if(c===','){ row.push(f); f=''; }
+    else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n') i++; row.push(f); f=''; rows.push(row); row=[]; }
+    else f+=c;
+  }
+  if(f!==''||row.length){ row.push(f); rows.push(row); }
+  const head=(rows.shift()||[]).map(s=>s.trim());
+  return rows.filter(r=>r.some(x=>x!=='')).map(r=>{const o={}; head.forEach((h,i)=>o[h]=(r[i]||'').trim()); return o;});
+}
+const norm = s => String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+function h(tag, attrs, ...kids){
+  const el=document.createElement(tag);
+  for(const k in (attrs||{})){
+    if(k==='class') el.className=attrs[k];
+    else if(k==='on') for(const ev in attrs.on) el.addEventListener(ev, attrs.on[ev]);
+    else el.setAttribute(k, attrs[k]);
+  }
+  kids.flat().forEach(c=>{ if(c==null||c===false) return; el.append(c.nodeType?c:document.createTextNode(String(c))); });
+  return el;
+}
+function safeUrl(u){
+  u=(u||'').trim(); if(!u) return null;
+  if(/^https?:\/\//i.test(u)) return u;
+  if(/^(www\.)?[\w-]+(\.[\w-]+)+(\/\S*)?$/i.test(u)) return 'https://'+u;
+  return null;
+}
+function monthYear(d){
+  const m=/^(\d{4})-(\d{2})-\d{2}/.exec(d||''); if(!m) return '';
+  const names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return names[+m[2]-1]+' '+m[1];
+}
+function splitList(s){ return (s||'').split(';').map(x=>x.trim()).filter(Boolean); }
+function linkOrText(label, u){
+  const url=safeUrl(u);
+  if(url) return h('a',{href:url,target:'_blank',rel:'noopener noreferrer nofollow'},label);
+  return u ? h('span',{},u) : null;
+}
+
+// ===== State =====
+let BIZ=[], CATS=[], CONFIG={}, shown=PAGE;
+const $ = id => document.getElementById(id);
+
+async function get(url){
+  const r=await fetch(url); if(!r.ok) throw new Error('HTTP '+r.status);
+  return parseCSV(await r.text());
+}
+
+async function init(){
+  try{
+    const [b,r,c,cfg]=await Promise.all([get(URLS.businesses),get(URLS.reviews),get(URLS.categories),get(URLS.config)]);
+    cfg.forEach(x=>CONFIG[x.key]=x.value);
+    const byId={};
+    b.forEach(x=>{ x._reviews=[]; x._cats=splitList(x.categories); byId[x.business_id]=x; });
+    r.forEach(x=>{ if(byId[x.business_id]) byId[x.business_id]._reviews.push(x); });
+    BIZ=b;
+    BIZ.forEach(x=>{
+      x._reviews.sort((p,q)=>(q.review_date||'').localeCompare(p.review_date||''));
+      x._latest=x._reviews[0]?x._reviews[0].review_date:'';
+      x._base=norm([x.name,x.keywords,x.categories,x.city_region,x.address].join(' | '));
+      x._revtext=norm(x._reviews.map(v=>v.review_text).join(' | '));
+    });
+    CATS=c;
+    setupFilters(); setupButtons();
+    $('stats').textContent=BIZ.length+' businesses · '+r.length+' reviews.';
+    render(true);
+  }catch(e){
+    $('list').replaceChildren(h('div',{class:'error'},'Sorry, the list could not be loaded right now. Please try again in a few minutes.'));
+    console.error(e);
+  }
+}
+
+function setupButtons(){
+  const u=safeUrl(CONFIG.new_business_form_url);
+  if(u) $('btn-new').href=u; else $('btn-new').hidden=true;
+}
+
+function setupFilters(){
+  const counts={}; BIZ.forEach(b=>b._cats.forEach(c=>counts[c]=(counts[c]||0)+1));
+  Object.keys(counts).sort((a,b)=>a.localeCompare(b)).forEach(c=>$('cat').append(h('option',{value:c},c+' ('+counts[c]+')')));
+  const cc={}; BIZ.forEach(b=>{ if(b.city_region) cc[b.city_region]=(cc[b.city_region]||0)+1; });
+  Object.keys(cc).filter(k=>cc[k]>=2).sort((a,b)=>cc[b]-cc[a]).forEach(c=>$('city').append(h('option',{value:c},c+' ('+cc[c]+')')));
+  ['q','cat','city','sort','inrev'].forEach(id=>$(id).addEventListener(id==='q'?'input':'change',()=>{shown=PAGE;render(true);}));
+  $('clear').addEventListener('click',()=>{$('q').value='';$('cat').value='';$('city').value='';$('sort').value='name';$('inrev').checked=true;shown=PAGE;render(true);});
+  $('more').addEventListener('click',()=>{shown+=PAGE;render(false);});
+}
+
+function filtered(){
+  const terms=norm($('q').value).split(/\s+/).filter(Boolean);
+  const cat=$('cat').value, city=$('city').value, inrev=$('inrev').checked;
+  let list=BIZ.filter(b=>{
+    if(cat && !b._cats.includes(cat)) return false;
+    if(city && b.city_region!==city) return false;
+    return terms.every(t=>b._base.includes(t) || (inrev && b._revtext.includes(t)));
+  });
+  const s=$('sort').value;
+  if(s==='name') list.sort((a,b)=>a.name.localeCompare(b.name,'en',{sensitivity:'base'}));
+  else if(s==='recent') list.sort((a,b)=>(b._latest||'').localeCompare(a._latest||'')||a.name.localeCompare(b.name));
+  else list.sort((a,b)=>b._reviews.length-a._reviews.length||a.name.localeCompare(b.name));
+  return {list,terms,inrev};
+}
+
+function prefillUrl(kind,b){
+  const base=safeUrl(CONFIG[kind+'_form_url']); if(!base) return null;
+  const idk=CONFIG[kind+'_form_entry_business_id'], nk=CONFIG[kind+'_form_entry_business_name'];
+  if(!/^entry\.\d+$/.test(idk||'')||!/^entry\.\d+$/.test(nk||'')) return base;
+  return base+'?usp=pp_url&'+idk+'='+encodeURIComponent(b.business_id)+'&'+nk+'='+encodeURIComponent(b.name);
+}
+
+function card(b,terms,inrev){
+  const meta=h('p',{class:'meta'});
+  const bits=[
+    b.city_region?h('span',{},b.city_region):null,
+    b.address?h('span',{},b.address):null,
+    b.phone?h('span',{},h('a',{href:'tel:'+b.phone.replace(/[^\d+]/g,'')},b.phone)):null,
+    b.email?h('span',{},b.email):null,
+    b.website?h('span',{},linkOrText('Website',b.website)):null,
+    b.facebook?h('span',{},linkOrText('Facebook',b.facebook)):null,
+    b.instagram?h('span',{},linkOrText('Instagram',b.instagram)):null,
+    b.google_maps?h('span',{},linkOrText('Map',b.google_maps)):null
+  ].filter(Boolean);
+  meta.append(...bits);
+
+  const chips=h('div',{class:'chips'},
+    b._cats.map(c=>h('button',{class:'chip',type:'button',title:'Show only '+c,on:{click:()=>{$('cat').value=c;shown=PAGE;render(true);window.scrollTo({top:0,behavior:'smooth'});}}},c)),
+    splitList(b.keywords).slice(0,8).map(k=>h('span',{class:'chip plain'},k)));
+
+  const revBox=h('div',{class:'reviews'});
+  const n=b._reviews.length;
+  const hits=inrev&&terms.length?b._reviews.map(v=>terms.every(t=>norm(v.review_text).includes(t))||terms.some(t=>norm(v.review_text).includes(t))):[];
+  const anyHit=hits.some(Boolean);
+  let expanded=n<=2||anyHit;
+  const draw=()=>{
+    revBox.replaceChildren();
+    if(!n){ revBox.append(h('div',{class:'noreviews'},'No written reviews yet.')); return; }
+    const vis=expanded?b._reviews:b._reviews.slice(0,2);
+    vis.forEach(v=>{
+      const idx=b._reviews.indexOf(v);
+      const by=[v.reviewer_display, monthYear(v.review_date)].filter(Boolean).join(' · ');
+      revBox.append(h('div',{class:'review'+(hits[idx]?' hit':'')},
+        v.review_text, by?h('span',{class:'byline'},'— '+by):null));
+    });
+    if(n>2) revBox.append(h('button',{class:'link-btn',type:'button',on:{click:()=>{expanded=!expanded;draw();}}},
+      expanded?'Show fewer reviews':'Show all '+n+' reviews'));
+  };
+  draw();
+
+  const rv=prefillUrl('review',b), co=prefillUrl('correction',b);
+  const actions=h('div',{class:'row-actions'},
+    rv?h('a',{class:'btn small',href:rv,target:'_blank',rel:'noopener'},'Add a review'):null,
+    co?h('a',{class:'btn small alt',href:co,target:'_blank',rel:'noopener'},'Suggest a correction'):null);
+
+  return h('article',{class:'card'},h('h2',{},b.name),chips,meta,revBox,actions);
+}
+
+function render(reset){
+  const {list,terms,inrev}=filtered();
+  const box=$('list');
+  if(reset) box.replaceChildren();
+  const start=reset?0:box.children.length;
+  list.slice(start,shown).forEach(b=>box.append(card(b,terms,inrev)));
+  $('count').textContent=list.length+(list.length===1?' business':' businesses')+' found';
+  if(!list.length) box.replaceChildren(h('div',{class:'empty'},'Nothing matches that search. Try fewer words, or clear the filters.'));
+  $('more').hidden=list.length<=shown;
+}
+init();
+</script>
+</body>
+</html>

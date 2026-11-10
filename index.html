@@ -9,11 +9,13 @@
 :root{
   --bg:#f6f7f9; --card:#ffffff; --text:#1d2430; --muted:#5b6575; --line:#dfe3ea;
   --accent:#0b5cad; --accent-text:#ffffff; --chip:#e8f0fa; --chip-text:#0b4a8a; --mark:#fff3b0;
+  --linkline:#9db3cc; --linkbg:#f3f7fc;
   --rent:#5B8FE0; --legal:#E8B923; --house:#2EAD6B; --med:#22AEB8; --trans:#F46524; --pets:#E69138; --hotel:#B5651D; --food:#A64D79; --retail:#4C7A1B; --nosec:#8a94a6;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark){
   :root{ --bg:#14181f; --card:#1d232d; --text:#e8ecf2; --muted:#9aa5b5; --line:#313a48;
+    --linkline:#4c5f78; --linkbg:#232c3a;
     --accent:#6db0ff; --accent-text:#0b1320; --chip:#26344a; --chip-text:#bcd9ff; --mark:#5a4d00; color-scheme: dark; }
 }
 *{box-sizing:border-box}
@@ -57,6 +59,11 @@ input[type=search],select{width:100%;padding:9px 10px;border:1px solid var(--lin
 .review.hit{background:var(--mark);border-radius:6px;padding:4px 6px}
 .byline{display:block;color:var(--muted);font-size:.85rem;margin-top:2px;white-space:normal}
 .noreviews{color:var(--muted);font-style:italic}
+.links{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 8px}
+.lb{display:inline-flex;align-items:center;min-height:34px;padding:3px 11px;border:1px solid var(--linkline);background:var(--linkbg);color:var(--accent);
+  border-radius:8px;font:inherit;font-size:.88rem;font-weight:500;text-decoration:none;cursor:pointer}
+.lb:hover{border-color:var(--accent)}
+.lb.more{width:100%;justify-content:center;margin-top:2px}
 .row-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
 .link-btn{background:none;border:0;padding:0;color:var(--accent);font:inherit;cursor:pointer;text-decoration:underline}
 .empty,.error{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;text-align:center}
@@ -246,18 +253,27 @@ function prefillUrl(kind,b){
 }
 
 function card(b,terms,inrev){
+  // Plain text details (city, address, email, and any link field that is not a real web address)
   const meta=h('p',{class:'meta'});
   const bits=[
     b.city_region?h('span',{},b.city_region):null,
     b.address?h('span',{},b.address):null,
-    b.phone?h('span',{},h('a',{href:'tel:'+b.phone.replace(/[^\d+]/g,'')},b.phone)):null,
-    b.email?h('span',{},b.email):null,
-    b.website?h('span',{},linkOrText('Website',b.website)):null,
-    b.facebook?h('span',{},linkOrText('Facebook',b.facebook)):null,
-    b.instagram?h('span',{},linkOrText('Instagram',b.instagram)):null,
-    b.google_maps?h('span',{},linkOrText('Map',b.google_maps)):null
-  ].filter(Boolean);
-  meta.append(...bits);
+    b.email?h('span',{},b.email):null
+  ];
+  // Tappable buttons
+  const btns=[];
+  if(b.phone){
+    const digits=b.phone.replace(/[^\d+]/g,'');
+    if(digits) btns.push(h('a',{class:'lb',href:'tel:'+digits},b.phone)); else bits.push(h('span',{},b.phone));
+  }
+  [['Website',b.website],['Facebook',b.facebook],['Instagram',b.instagram],['Map',b.google_maps]].forEach(([label,val])=>{
+    if(!val) return;
+    const url=safeUrl(val);
+    if(url) btns.push(h('a',{class:'lb',href:url,target:'_blank',rel:'noopener noreferrer nofollow'},label));
+    else bits.push(h('span',{},val));
+  });
+  meta.append(...bits.filter(Boolean));
+  const links=btns.length?h('div',{class:'links'},btns):null;
 
   const chips=h('div',{class:'chips'},
     b._cats.map(c=>h('button',{class:'chip',type:'button',title:'Show only '+c,on:{click:()=>{$('cat').value=c;shown=PAGE;render(true);window.scrollTo({top:0,behavior:'smooth'});}}},c)),
@@ -278,7 +294,7 @@ function card(b,terms,inrev){
       revBox.append(h('div',{class:'review'+(hits[idx]?' hit':'')},
         v.review_text, by?h('span',{class:'byline'},'— '+by):null));
     });
-    if(n>2) revBox.append(h('button',{class:'link-btn',type:'button',on:{click:()=>{expanded=!expanded;draw();}}},
+    if(n>2) revBox.append(h('button',{class:'lb more',type:'button',on:{click:()=>{expanded=!expanded;draw();}}},
       expanded?'Show fewer reviews':'Show all '+n+' reviews'));
   };
   draw();
@@ -289,7 +305,7 @@ function card(b,terms,inrev){
     co?h('a',{class:'btn small alt',href:co,target:'_blank',rel:'noopener'},'Suggest a correction'):null);
 
   const sec=SECTION_CLASS[splitList(b.sections)[0]]||'';
-  return h('article',{class:'card '+sec},h('h2',{},b.name),chips,meta,revBox,actions);
+  return h('article',{class:'card '+sec},h('h2',{},b.name),chips,meta.childNodes.length?meta:null,links,revBox,actions);
 }
 
 function render(reset){

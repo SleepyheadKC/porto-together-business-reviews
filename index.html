@@ -19,6 +19,13 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 .wrap{max-width:920px;margin:0 auto;padding:20px 16px 48px}
+.hero{background:linear-gradient(100deg,#0f5a35 0%,#1c7d4b 45%,#34b36a 100%);color:#fff;border-bottom:4px solid #7ad6a0}
+.hero-in{max-width:920px;margin:0 auto;padding:24px 16px 18px}
+.hero h1{margin:0 0 4px;font-size:1.7rem;color:#fff}
+.hero .sub{color:#e3f5ea;margin:0 0 14px}
+.hero a.btn{background:#fff;border-color:#fff;color:#14603a}
+.hero a.btn:hover{background:#e3f5ea}
+@media (prefers-color-scheme: dark){ .hero{background:linear-gradient(100deg,#0a3622 0%,#145232 45%,#228552 100%);border-bottom-color:#2f8f5d} }
 h1{font-size:1.6rem;margin:0 0 4px}
 .sub{color:var(--muted);margin:0 0 16px}
 .top-actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
@@ -57,13 +64,16 @@ footer{color:var(--muted);font-size:.85rem;margin-top:28px;border-top:1px solid 
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>Porto Together – Business &amp; Service Reviews</h1>
-  <p class="sub">Recommendations shared by members of the Porto Together community. <span id="stats"></span></p>
-  <div class="top-actions">
-    <a class="btn" id="btn-new" href="#" target="_blank" rel="noopener">+ Recommend a business</a>
+<header class="hero">
+  <div class="hero-in">
+    <h1>Porto Together – Business &amp; Service Reviews</h1>
+    <p class="sub">Recommendations shared by members of the Porto Together community. <span id="stats"></span></p>
+    <div class="top-actions">
+      <a class="btn" id="btn-new" href="#" target="_blank" rel="noopener">+ Recommend a business</a>
+    </div>
   </div>
-
+</header>
+<div class="wrap">
   <div class="filters">
     <div class="full">
       <label for="q">Search by business name, keyword, or words in a review</label>

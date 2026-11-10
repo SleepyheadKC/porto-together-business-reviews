@@ -9,6 +9,7 @@
 :root{
   --bg:#f6f7f9; --card:#ffffff; --text:#1d2430; --muted:#5b6575; --line:#dfe3ea;
   --accent:#0b5cad; --accent-text:#ffffff; --chip:#e8f0fa; --chip-text:#0b4a8a; --mark:#fff3b0;
+  --rent:#5B8FE0; --legal:#E8B923; --house:#2EAD6B; --med:#22AEB8; --trans:#F46524; --pets:#E69138; --hotel:#B5651D; --food:#A64D79; --retail:#4C7A1B; --nosec:#8a94a6;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark){
@@ -33,11 +34,14 @@ input[type=search],select{width:100%;padding:9px 10px;border:1px solid var(--lin
 .check label{margin:0;font-size:.92rem;color:var(--text)}
 @media(max-width:640px){.filters{grid-template-columns:1fr}}
 .count{color:var(--muted);margin:8px 2px 12px;font-size:.92rem}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.card{--c:var(--nosec);background:var(--card);border:1px solid var(--line);border-left:7px solid var(--c);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.sec-rent{--c:var(--rent)} .sec-legal{--c:var(--legal)} .sec-house{--c:var(--house)} .sec-med{--c:var(--med)}
+.sec-trans{--c:var(--trans)} .sec-pets{--c:var(--pets)} .sec-hotel{--c:var(--hotel)} .sec-food{--c:var(--food)} .sec-retail{--c:var(--retail)}
 .card h2{font-size:1.15rem;margin:0 0 6px;overflow-wrap:anywhere}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
-.chip{background:var(--chip);color:var(--chip-text);border:0;border-radius:999px;padding:2px 10px;font-size:.82rem;cursor:pointer;font-family:inherit}
+.chip{background:color-mix(in srgb,var(--c) 20%,var(--card));color:color-mix(in srgb,var(--c) 40%,var(--text));border:1px solid color-mix(in srgb,var(--c) 45%,var(--card));border-radius:999px;padding:2px 10px;font-size:.82rem;cursor:pointer;font-family:inherit}
 .chip.plain{cursor:default;background:transparent;border:1px solid var(--line);color:var(--muted)}
+.chip.plain{background:transparent}
 .meta{font-size:.92rem;color:var(--muted);margin:0 0 6px;overflow-wrap:anywhere}
 .meta a{color:var(--accent)}
 .meta span+span::before{content:" · ";color:var(--muted)}
@@ -108,6 +112,12 @@ const URLS = {
   config:     SHEET + '1275271188'
 };
 const PAGE = 25;
+// Card colour is chosen by the business's first section (colours defined in the CSS above)
+const SECTION_CLASS = {
+  'Rentals & Property':'sec-rent', 'Legal, Financial & Expat':'sec-legal', 'Household Services':'sec-house',
+  'Medical, Health & Beauty':'sec-med', 'Transport & Travel':'sec-trans', 'Pets':'sec-pets',
+  'Hotels & Tourism':'sec-hotel', 'Food & Dining':'sec-food', 'Retail & Experiences':'sec-retail'
+};
 
 // ===== Helpers =====
 function parseCSV(text){
@@ -268,7 +278,8 @@ function card(b,terms,inrev){
     rv?h('a',{class:'btn small',href:rv,target:'_blank',rel:'noopener'},'Add a review'):null,
     co?h('a',{class:'btn small alt',href:co,target:'_blank',rel:'noopener'},'Suggest a correction'):null);
 
-  return h('article',{class:'card'},h('h2',{},b.name),chips,meta,revBox,actions);
+  const sec=SECTION_CLASS[splitList(b.sections)[0]]||'';
+  return h('article',{class:'card '+sec},h('h2',{},b.name),chips,meta,revBox,actions);
 }
 
 function render(reset){

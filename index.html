@@ -291,7 +291,7 @@ function card(b,terms,inrev){
 
   const chips=h('div',{class:'chips'},
     b._cats.map(c=>h('button',{class:'chip',type:'button',title:'Show only '+c,on:{click:()=>{$('cat').value=c;shown=PAGE;render(true);window.scrollTo({top:0,behavior:'smooth'});}}},c)),
-    splitList(b.keywords).slice(0,8).map(k=>h('span',{class:'chip plain'},k)));
+    (b.keywords||'').split(/[;,]/).map(x=>x.trim()).filter(Boolean).slice(0,8).map(k=>h('span',{class:'chip plain'},k)));
 
   const revBox=h('div',{class:'reviews'});
   const n=b._reviews.length;

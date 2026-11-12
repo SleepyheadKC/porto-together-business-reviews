@@ -44,6 +44,11 @@ input[type=search],select{width:100%;padding:9px 10px;border:1px solid var(--lin
 @media(max-width:640px){.filters{grid-template-columns:1fr}}
 .count{color:var(--muted);margin:8px 2px 12px;font-size:.92rem}
 .hint{color:var(--muted);font-size:.82rem;margin-top:4px}
+/* The main search box: green border, larger text, magnifier icon, soft glow when focused */
+input#q{border:2px solid var(--accent);padding:12px 12px 12px 42px;font-size:1.05rem;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5L21 21'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:12px center;background-size:20px 20px}
+input#q:focus{outline:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 25%,transparent)}
 .card{--c:var(--nosec);background:var(--card);border:1px solid var(--line);border-left:7px solid var(--c);border-radius:12px;padding:14px 16px;margin-bottom:12px}
 .sec-rent{--c:var(--rent)} .sec-legal{--c:var(--legal)} .sec-house{--c:var(--house)} .sec-med{--c:var(--med)}
 .sec-trans{--c:var(--trans)} .sec-pets{--c:var(--pets)} .sec-hotel{--c:var(--hotel)} .sec-food{--c:var(--food)} .sec-retail{--c:var(--retail)}

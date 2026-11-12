@@ -61,7 +61,7 @@ input[type=search],select{width:100%;padding:9px 10px;border:1px solid var(--lin
 .noreviews{color:var(--muted);font-style:italic}
 .links{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 8px}
 .lb{display:inline-flex;align-items:center;min-height:34px;padding:3px 11px;border:1px solid var(--linkline);background:var(--linkbg);color:var(--accent);
-  border-radius:8px;font:inherit;font-size:.88rem;font-weight:500;text-decoration:none;cursor:pointer}
+  border-radius:8px;font:inherit;font-size:.88rem;font-weight:500;text-decoration:none;cursor:pointer;overflow-wrap:anywhere}
 .lb:hover{border-color:var(--accent)}
 .lb.more{width:100%;justify-content:center;margin-top:2px}
 .row-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
@@ -104,7 +104,7 @@ footer{color:var(--muted);font-size:.85rem;margin-top:28px;border-top:1px solid 
     </div>
     <div class="full check">
       <input type="checkbox" id="inrev" checked><label for="inrev">Also search inside review text</label>
-      <button class="link-btn" id="clear" type="button" style="margin-left:auto">Clear filters</button>
+      <button class="btn small alt" id="clear" type="button" style="margin-left:auto">Clear filters</button>
     </div>
   </div>
 
@@ -257,14 +257,19 @@ function card(b,terms,inrev){
   const meta=h('p',{class:'meta'});
   const bits=[
     b.city_region?h('span',{},b.city_region):null,
-    b.address?h('span',{},b.address):null,
-    b.email?h('span',{},b.email):null
+    b.address?h('span',{},b.address):null
   ];
   // Tappable buttons
   const btns=[];
   if(b.phone){
     const digits=b.phone.replace(/[^\d+]/g,'');
     if(digits) btns.push(h('a',{class:'lb',href:'tel:'+digits},b.phone)); else bits.push(h('span',{},b.phone));
+  }
+  if(b.email){
+    // A single plain address becomes a mail link; anything odd (several addresses, ? & % etc.) stays as text.
+    const em=b.email.trim();
+    if(/^[^\s@<>"',;?&%]+@[^\s@<>"',;?&%]+\.[^\s@<>"',;?&%]+$/.test(em)) btns.push(h('a',{class:'lb',href:'mailto:'+em},em));
+    else bits.push(h('span',{},b.email));
   }
   [['Website',b.website],['Facebook',b.facebook],['Instagram',b.instagram],['Map',b.google_maps]].forEach(([label,val])=>{
     if(!val) return;

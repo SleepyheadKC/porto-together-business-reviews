@@ -43,6 +43,7 @@ input[type=search],select{width:100%;padding:9px 10px;border:1px solid var(--lin
 .check label{margin:0;font-size:.92rem;color:var(--text)}
 @media(max-width:640px){.filters{grid-template-columns:1fr}}
 .count{color:var(--muted);margin:8px 2px 12px;font-size:.92rem}
+.hint{color:var(--muted);font-size:.82rem;margin-top:4px}
 .card{--c:var(--nosec);background:var(--card);border:1px solid var(--line);border-left:7px solid var(--c);border-radius:12px;padding:14px 16px;margin-bottom:12px}
 .sec-rent{--c:var(--rent)} .sec-legal{--c:var(--legal)} .sec-house{--c:var(--house)} .sec-med{--c:var(--med)}
 .sec-trans{--c:var(--trans)} .sec-pets{--c:var(--pets)} .sec-hotel{--c:var(--hotel)} .sec-food{--c:var(--food)} .sec-retail{--c:var(--retail)}
@@ -84,7 +85,8 @@ footer{color:var(--muted);font-size:.85rem;margin-top:28px;border-top:1px solid 
   <div class="filters">
     <div class="full">
       <label for="q">Search by business name, keyword, or words in a review</label>
-      <input id="q" type="search" placeholder="e.g. dentist, plumber, English-speaking, Dr. Silva" autocomplete="off">
+      <input id="q" type="search" placeholder="e.g. dentist, plumber, English-speaking, Dr. Silva" autocomplete="off" enterkeyhint="search">
+      <div class="hint">Results update as you type.</div>
     </div>
     <div>
       <label for="cat">Category</label>
@@ -226,6 +228,8 @@ function setupFilters(){
   const cc={}; BIZ.forEach(b=>{ if(b.city_region) cc[b.city_region]=(cc[b.city_region]||0)+1; });
   Object.keys(cc).filter(k=>cc[k]>=2).sort((a,b)=>cc[b]-cc[a]).forEach(c=>$('city').append(h('option',{value:c},c+' ('+cc[c]+')')));
   ['q','cat','city','sort','inrev'].forEach(id=>$(id).addEventListener(id==='q'?'input':'change',()=>{shown=PAGE;render(true);}));
+  // Enter / the phone keyboard's Search key just closes the keyboard and scrolls to the results (the list has already updated).
+  $('q').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); $('q').blur(); $('count').scrollIntoView({behavior:'smooth',block:'start'}); } });
   $('clear').addEventListener('click',()=>{$('q').value='';$('cat').value='';$('city').value='';$('sort').value='name';$('inrev').checked=true;shown=PAGE;render(true);});
   $('more').addEventListener('click',()=>{shown+=PAGE;render(false);});
 }

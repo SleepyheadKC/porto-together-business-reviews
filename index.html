@@ -198,7 +198,16 @@ async function get(url){
   return parseCSV(await r.text());
 }
 
+// Example searches shown in the search box: 3 random picks from this list (new picks on every page load).
+const EXAMPLE_WORDS=['dentist','plumber','tax','accountant','electrician','chiropractor','hair','furniture','handyman','insurance','lawyer','massage','endocrinologist','orthopedic','dinnerware','yarn','cleaning','locksmith','car repair','watch repair','dermatologist','mattress','immigration'];
+function setExamples(){
+  const pool=EXAMPLE_WORDS.slice();
+  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  $('q').placeholder='e.g. '+pool.slice(0,3).join(', ');
+}
+
 async function init(){
+  setExamples();
   try{
     const [b,r,c,cfg]=await Promise.all([get(URLS.businesses),get(URLS.reviews),get(URLS.categories),get(URLS.config)]);
     cfg.forEach(x=>CONFIG[x.key]=x.value);

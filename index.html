@@ -172,7 +172,7 @@ function h(tag, attrs, ...kids){
   return el;
 }
 function safeUrl(u){
-  u=(u||'').trim(); if(!u) return null;
+  u=(u||'').trim().replace(/[:;,]+$/,''); if(!u) return null;
   if(/^https?:\/\//i.test(u)) return u;
   if(/^(www\.)?[\w-]+(\.[\w-]+)+(\/\S*)?$/i.test(u)) return 'https://'+u;
   return null;
@@ -279,22 +279,31 @@ function card(b,terms,inrev){
   ];
   // Tappable buttons
   const btns=[];
-  if(b.phone){
-    const digits=b.phone.replace(/[^\d+]/g,'');
-    if(digits) btns.push(h('a',{class:'lb',href:'tel:'+digits},b.phone)); else bits.push(h('span',{},b.phone));
-  }
-  if(b.email){
-    // A single plain address becomes a mail link; anything odd (several addresses, ? & % etc.) stays as text.
-    const em=b.email.trim();
+  // Several numbers in one cell are separated by ";" and each gets its own button.
+  (b.phone||'').split(';').map(p=>p.trim()).filter(Boolean).forEach(p=>{
+    const digits=p.replace(/[^\d+]/g,'');
+    if(digits.length>=6) btns.push(h('a',{class:'lb',href:'tel:'+digits},p)); else bits.push(h('span',{},p));
+  });
+  // Several addresses in one cell are separated by ";" and each plain address becomes its own mail link; anything odd (? & % etc.) stays as text.
+  (b.email||'').split(';').map(e=>e.trim()).filter(Boolean).forEach(em=>{
     if(/^[^\s@<>"',;?&%]+@[^\s@<>"',;?&%]+\.[^\s@<>"',;?&%]+$/.test(em)) btns.push(h('a',{class:'lb',href:'mailto:'+em},em));
-    else bits.push(h('span',{},b.email));
-  }
+    else bits.push(h('span',{},em));
+  });
   [['Website',b.website],['Facebook',b.facebook],['Instagram',b.instagram],['Map',b.google_maps]].forEach(([label,val])=>{
     if(!val) return;
     const url=safeUrl(val);
     if(url) btns.push(h('a',{class:'lb',href:url,target:'_blank',rel:'noopener noreferrer nofollow'},label));
     else bits.push(h('span',{},val));
   });
+  // "Other link" gets a button unless it is just the website again.
+  if(b.other_links){
+    const norm1=x=>(x||'').toLowerCase().replace(/^https?:\/\/(www\.)?/,'').replace(/[#?].*$/,'').replace(/\/+$/,'');
+    const ol=safeUrl(b.other_links);
+    if(ol && norm1(ol)!==norm1(b.website)) btns.push(h('a',{class:'lb',href:ol,target:'_blank',rel:'noopener noreferrer nofollow'},'More info'));
+    else if(!ol) bits.push(h('span',{},b.other_links));
+  }
+  // Contact notes (for example "also on WhatsApp") show as plain text, except a note that is only a web address already shown as a button.
+  if(b.contact_notes && !/^[\w.-]+\.[a-z]{2,}(\/\S*)?:?$/i.test(b.contact_notes.trim())) bits.push(h('span',{},b.contact_notes));
   meta.append(...bits.filter(Boolean));
   const links=btns.length?h('div',{class:'links'},btns):null;
 

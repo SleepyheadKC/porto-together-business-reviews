@@ -35,6 +35,8 @@ a.btn,button.btn{display:inline-block;border:1px solid var(--accent);background:
   padding:8px 14px;border-radius:8px;text-decoration:none;font:inherit;font-weight:600;cursor:pointer}
 a.btn.alt,button.btn.alt{background:transparent;color:var(--accent)}
 a.btn.small,button.btn.small{padding:4px 10px;font-size:.88rem}
+/* The .btn rule above sets display, which would otherwise override the "hidden" attribute (this is what kept "Show more" visible). */
+[hidden]{display:none !important}
 .filters{display:grid;gap:10px;grid-template-columns:1fr 1fr 1fr;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
 .filters .full{grid-column:1/-1}
 label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:3px}

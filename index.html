@@ -106,8 +106,8 @@ footer{color:var(--muted);font-size:.85rem;margin-top:28px;border-top:1px solid 
     <div>
       <label for="sort">Sort by</label>
       <select id="sort">
+        <option value="recent" selected>Most recent review</option>
         <option value="name">Name (A–Z)</option>
-        <option value="recent">Most recent review</option>
         <option value="most">Most reviews</option>
       </select>
     </div>
@@ -246,7 +246,7 @@ function setupFilters(){
   ['q','cat','city','sort','inrev'].forEach(id=>$(id).addEventListener(id==='q'?'input':'change',()=>{shown=PAGE;render(true);}));
   // Enter / the phone keyboard's Search key just closes the keyboard and scrolls to the results (the list has already updated).
   $('q').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); $('q').blur(); $('count').scrollIntoView({behavior:'smooth',block:'start'}); } });
-  $('clear').addEventListener('click',()=>{$('q').value='';$('cat').value='';$('city').value='';$('sort').value='name';$('inrev').checked=true;shown=PAGE;render(true);});
+  $('clear').addEventListener('click',()=>{$('q').value='';$('cat').value='';$('city').value='';$('sort').value='recent';$('inrev').checked=true;shown=PAGE;render(true);});
   $('more').addEventListener('click',()=>{shown+=PAGE;render(false);});
 }
 

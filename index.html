@@ -76,6 +76,12 @@ input#q:focus{outline:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 
 .link-btn{background:none;border:0;padding:0;color:var(--accent);font:inherit;cursor:pointer;text-decoration:underline}
 .empty,.error{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;text-align:center}
 footer{color:var(--muted);font-size:.85rem;margin-top:28px;border-top:1px solid var(--line);padding-top:14px}
+footer a{color:var(--accent)}
+footer details{margin-top:12px}
+footer summary{cursor:pointer;color:var(--accent);font-weight:600}
+footer details h3{font-size:.9rem;margin:14px 0 4px;color:var(--text)}
+footer details p{margin:0 0 6px}
+footer details ul{margin:4px 0 6px;padding-left:20px}
 </style>
 </head>
 <body>
@@ -125,6 +131,27 @@ footer{color:var(--muted);font-size:.85rem;margin-top:28px;border-top:1px solid 
     Reviews are personal opinions shared by individual members and are not endorsements by Porto Together or its admins.
     Please check details yourself before hiring anyone. If something is wrong or out of date, use
     “Suggest a correction” on that business. Submissions are checked by an admin before they appear here.
+    <details id="privacy">
+      <summary>Privacy notice: no cookies, visits counted anonymously (tap to read)</summary>
+      <h3>Porto Business and Services Reviews: privacy notice</h3>
+      <p><em>Last updated: 21 Nov 2026</em></p>
+      <p><strong>Who runs this site.</strong> This directory is run by volunteer admins from the Porto Together community. You can contact us at <span id="pn-mail">the address given in the “Suggest a correction” form</span>.</p>
+      <h3>What is on the site</h3>
+      <p>Business names and contact details, and short recommendations written by community members. Reviewers are typically shown by first name and the initial of their surname. Admins check each submission before it is published.</p>
+      <h3>What we collect when you send us something</h3>
+      <p>If you use the forms to add a business, add a review, or suggest a correction, we receive what you type: the business details, your review, the name you want shown, and, if you choose to give it, your own contact details. Your contact details are optional, are never published, and are used only if an admin needs to ask you a question. Submissions are kept in a private spreadsheet that only the admins can open. We keep submissions for as long as the directory runs, unless you ask us to remove them.</p>
+      <h3>Visitor statistics</h3>
+      <p>We count visits with GoatCounter. It uses no cookies, and according to GoatCounter it does not store visitors' IP addresses or build personal profiles. We see only totals, such as visits per day, countries and browser types.</p>
+      <h3>Other services involved</h3>
+      <p>The site is hosted by GitHub Pages, and the lists and forms are provided by Google Sheets and Google Forms. These services may log your IP address as part of normal operation, under their own privacy policies:</p>
+      <ul>
+        <li><a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">GitHub privacy statement</a></li>
+        <li><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google privacy policy</a></li>
+      </ul>
+      <p>This site sets no cookies of its own.</p>
+      <h3>Your choices</h3>
+      <p>You can ask us to correct or remove a listing or a review, including your own, or a business you own or work for. Use the “Suggest a correction” button on the listing, or contact us at the address above. You can also ask what information we hold about you. If you are unhappy with how your data is handled, you have the right to complain to the Portuguese data protection authority, the <a href="https://www.cnpd.pt" target="_blank" rel="noopener">CNPD</a>.</p>
+    </details>
   </footer>
 </div>
 
@@ -352,6 +379,8 @@ function render(reset){
   if(!list.length) box.replaceChildren(h('div',{class:'empty'},'Nothing matches that search. Try fewer words, or clear the filters.'));
   $('more').hidden=list.length<=shown;
 }
+// Privacy notice contact address: assembled here so it is not sitting in the page as plain text for address-harvesting robots.
+(function(){ const e=document.getElementById('pn-mail'); if(!e) return; const a=['lrioskc','gmail.com'].join('@'); const l=document.createElement('a'); l.href='mailto:'+a; l.textContent=a; e.replaceChildren(l); })();
 init();
 </script>
 <!-- Visitor statistics: GoatCounter (cookie-free, no personal tracking). Dashboard: https://sleepyheadkc.goatcounter.com -->

@@ -135,7 +135,7 @@ footer details ul{margin:4px 0 6px;padding-left:20px}
       <summary>Privacy notice: no cookies, visits counted anonymously (tap to read)</summary>
       <h3>Porto Business and Services Reviews: privacy notice</h3>
       <p><em>Last updated: 21 Nov 2026</em></p>
-      <p><strong>Who runs this site.</strong> This directory is run by volunteer admins from the Porto Together community. You can contact us at <span id="pn-mail">the address given in the “Suggest a correction” form</span>.</p>
+      <p><strong>Who runs this site.</strong> This directory is run by volunteer admins from the Porto Together community.</p>
       <h3>What is on the site</h3>
       <p>Business names and contact details, and short recommendations written by community members. Reviewers are typically shown by first name and the initial of their surname. Admins check each submission before it is published.</p>
       <h3>What we collect when you send us something</h3>
@@ -150,7 +150,7 @@ footer details ul{margin:4px 0 6px;padding-left:20px}
       </ul>
       <p>This site sets no cookies of its own.</p>
       <h3>Your choices</h3>
-      <p>You can ask us to correct or remove a listing or a review, including your own, or a business you own or work for. Use the “Suggest a correction” button on the listing, or contact us at the address above. You can also ask what information we hold about you. If you are unhappy with how your data is handled, you have the right to complain to the Portuguese data protection authority, the <a href="https://www.cnpd.pt" target="_blank" rel="noopener">CNPD</a>.</p>
+      <p>You can ask us to correct or remove a listing or a review, including your own, or a business you own or work for. Use the “Suggest a correction” button on the listing. You can also use that button to ask what information we hold about you. If you are unhappy with how your data is handled, you have the right to complain to the Portuguese data protection authority, the <a href="https://www.cnpd.pt" target="_blank" rel="noopener">CNPD</a>.</p>
     </details>
   </footer>
 </div>
@@ -379,8 +379,6 @@ function render(reset){
   if(!list.length) box.replaceChildren(h('div',{class:'empty'},'Nothing matches that search. Try fewer words, or clear the filters.'));
   $('more').hidden=list.length<=shown;
 }
-// Privacy notice contact address: assembled here so it is not sitting in the page as plain text for address-harvesting robots.
-(function(){ const e=document.getElementById('pn-mail'); if(!e) return; const a=['lrioskc','gmail.com'].join('@'); const l=document.createElement('a'); l.href='mailto:'+a; l.textContent=a; e.replaceChildren(l); })();
 init();
 </script>
 <!-- Visitor statistics: GoatCounter (cookie-free, no personal tracking). Dashboard: https://sleepyheadkc.goatcounter.com -->
